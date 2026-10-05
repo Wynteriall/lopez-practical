@@ -58,6 +58,7 @@ Build a barebones React Team Directory application with functionality prioritize
 
 ### Slice 5: UserCard Component & Users Page (Async Load, Search, Favorites)
 * **Goal**: Implement the user directory with simulated delay, search filter, document title, and favorite toggling.
+* **Status**: Finished
 * **Changes**:
   * `src/components/UserCard.jsx`: Props: `name`, `email`, `company`, `isFavorite`, `onToggleFavorite`. Renders `Button` and detail link to `/users/:id`.
   * `src/pages/Users.jsx`:
@@ -77,6 +78,7 @@ Build a barebones React Team Directory application with functionality prioritize
 
 ### Slice 6: UserDetails Page (Dynamic Routing & Document Title)
 * **Goal**: Implement individual user view with route parameters and not-found handling.
+* **Status**: Finished
 * **Changes**:
   * `src/pages/UserDetails.jsx`:
     * `useParams` to read `id`.
