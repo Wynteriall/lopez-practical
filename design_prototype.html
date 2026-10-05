@@ -283,6 +283,7 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let center = 0;
     let focusedIndex = null;
+    let hovered = false;
     let favorites = new Set();
     const trajectory = { lift: 21, spread: 1.4, edgeScale: 0.68, edgeBlur: 2 };
 
@@ -311,10 +312,6 @@
           focusedIndex = index;
           updateCards();
         });
-        card.addEventListener('mouseleave', () => {
-          focusedIndex = null;
-          updateCards();
-        });
         card.querySelector('.card-favorite').addEventListener('click', () => {
           favorites.has(index) ? favorites.delete(index) : favorites.add(index);
           favoriteCount.textContent = favorites.size;
@@ -332,7 +329,8 @@
         if (distance > users.length / 2) distance -= users.length;
         if (distance < -users.length / 2) distance += users.length;
         const isFocused = focusedIndex === index;
-        const visible = Math.abs(distance) <= 3;
+        const visibleLimit = window.innerWidth < 720 ? 2 : 3;
+        const visible = Math.abs(distance) <= visibleLimit;
         const distanceFromCenter = Math.abs(distance);
         const scale = distance === 0 ? 1 : Math.max(trajectory.edgeScale, 1 - distanceFromCenter * (1 - trajectory.edgeScale) / 3);
         const x = distance * (window.innerWidth < 720 ? 67 : 82);
@@ -366,6 +364,19 @@
     document.getElementById('profile-close').addEventListener('click', closeProfile);
     document.getElementById('profile-dialog').addEventListener('click', (event) => { if (event.target.id === 'profile-dialog') closeProfile(); });
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeProfile(); });
+    carousel.addEventListener('mouseenter', () => {
+      hovered = true;
+    });
+    carousel.addEventListener('mouseleave', () => {
+      hovered = false;
+      focusedIndex = null;
+      updateCards();
+    });
+    if (!reducedMotion) {
+      setInterval(() => {
+        if (!hovered) move(1);
+      }, 3600);
+    }
 
     [
       ['curve-lift', 'lift', (value) => `${value}px`, (value) => Number(value)],
