@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Design Prototype - Team Directory</title>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -53,19 +53,19 @@
   <style>
     /* Base Theme Variables */
     :root {
-      --bg: theme('colors.nature.bg');
-      --card: theme('colors.nature.card');
-      --text: theme('colors.nature.text');
-      --accent: theme('colors.nature.accent');
-      --border: theme('colors.nature.border');
+      --bg: #f4f1ea;
+      --card: #e8e5d9;
+      --text: #2c402e;
+      --accent: #8b2615;
+      --border: #d0cbb8;
     }
     
     .dark {
-      --bg: theme('colors.midnight.bg');
-      --card: theme('colors.midnight.card');
-      --text: theme('colors.midnight.text');
-      --accent: theme('colors.midnight.accent');
-      --border: theme('colors.midnight.border');
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --accent: #fef08a;
+      --border: #334155;
     }
 
     body {
@@ -91,9 +91,13 @@
       border-color: var(--accent);
     }
 
+    .group:hover .theme-accent-border {
+      border-color: var(--accent);
+    }
+
     /* Scroll Animation */
     .animate-on-scroll {
-      opacity: 0;
+      opacity: 1;
     }
     
     .is-visible {
@@ -155,7 +159,7 @@
             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
           </svg>
         </button>
-        <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-2 border-[var(--border)] group-hover:theme-accent-border transition-colors">
+        <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-2 border-[var(--border)] theme-accent-border transition-colors">
           <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}&backgroundColor=transparent" alt="${user.name}" class="w-full h-full object-cover">
         </div>
         <h3 class="font-serif text-2xl mb-2">${user.name}</h3>
