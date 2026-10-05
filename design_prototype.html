@@ -3,190 +3,335 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Design Prototype - Team Directory</title>
+  <meta name="description" content="The Directory - an editorial team directory prototype">
+  <title>The Directory | Team Directory</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            serif: ['"Playfair Display"', 'serif'],
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            // Light Mode: Nature Green
-            nature: {
-              bg: '#f4f1ea',
-              card: '#e8e5d9',
-              text: '#2c402e',
-              accent: '#8b2615',
-              border: '#d0cbb8'
-            },
-            // Dark Mode: Midnight Blue
-            midnight: {
-              bg: '#0f172a',
-              card: '#1e293b',
-              text: '#f8fafc',
-              accent: '#fef08a',
-              border: '#334155'
-            }
-          },
-          animation: {
-            'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-          },
-          keyframes: {
-            fadeInUp: {
-              '0%': { opacity: '0', transform: 'translateY(40px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    /* Base Theme Variables */
     :root {
       --bg: #f4f1ea;
-      --card: #e8e5d9;
+      --surface: rgba(232, 229, 217, 0.76);
+      --surface-strong: #e8e5d9;
       --text: #2c402e;
+      --muted: #647064;
       --accent: #8b2615;
+      --accent-contrast: #f4f1ea;
       --border: #d0cbb8;
+      --shadow: 0 18px 50px rgba(44, 64, 46, 0.1);
     }
-    
-    .dark {
+
+    html.dark {
       --bg: #0f172a;
-      --card: #1e293b;
+      --surface: rgba(30, 41, 59, 0.7);
+      --surface-strong: #1e293b;
       --text: #f8fafc;
+      --muted: #aeb8c5;
       --accent: #fef08a;
+      --accent-contrast: #0f172a;
       --border: #334155;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
     }
 
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      background-color: var(--bg);
+      margin: 0;
+      background: var(--bg);
       color: var(--text);
-      transition: background-color 0.5s ease, color 0.5s ease;
+      font-family: Inter, sans-serif;
+      transition: background-color .4s ease, color .4s ease;
     }
-    
-    .theme-card {
-      background-color: var(--card);
-      border-color: var(--border);
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .34;
+      pointer-events: none;
+      background-image: radial-gradient(circle at 12% 18%, var(--accent) 0 1px, transparent 1px), radial-gradient(circle at 86% 76%, var(--text) 0 1px, transparent 1px);
+      background-size: 34px 34px, 51px 51px;
     }
-    
-    .theme-accent {
-      color: var(--accent);
-    }
-    
-    .theme-accent-bg {
-      background-color: var(--accent);
-    }
-    
-    .theme-accent-border {
-      border-color: var(--accent);
-    }
+    h1, h2, h3, p { margin-top: 0; }
+    a { color: inherit; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    .serif { font-family: "Playfair Display", serif; }
+    .accent { color: var(--accent); }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .section { scroll-margin-top: 92px; }
 
-    .group:hover .theme-accent-border {
-      border-color: var(--accent);
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(16px);
     }
+    .nav-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-size: 1.35rem; font-weight: 600; font-style: italic; text-decoration: none; white-space: nowrap; }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-link { border: 0; border-bottom: 1px solid transparent; background: none; padding: 8px 0; opacity: .7; transition: opacity .2s, border-color .2s, color .2s; }
+    .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); border-color: var(--accent); }
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .icon-button, .outline-button { border: 1px solid var(--border); background: transparent; border-radius: 7px; transition: background .2s, color .2s, border-color .2s, transform .2s; }
+    .icon-button { width: 40px; height: 40px; display: grid; place-items: center; }
+    .outline-button { padding: 9px 15px; }
+    .icon-button:hover, .outline-button:hover { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+    .favorite-count { font-size: .8rem; white-space: nowrap; }
 
-    /* Scroll Animation */
-    .animate-on-scroll {
-      opacity: 1;
+    .hero { min-height: 650px; display: grid; align-content: center; text-align: center; padding: 100px 0 120px; }
+    .eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .25em; text-transform: uppercase; opacity: .65; margin-bottom: 22px; }
+    .hero h1 { max-width: 780px; margin: 0 auto 25px; font-size: clamp(3.4rem, 9vw, 7.5rem); line-height: .98; letter-spacing: -.04em; }
+    .hero-copy { max-width: 620px; margin: 0 auto; font-size: 1.05rem; line-height: 1.8; color: var(--muted); }
+    .hero-link { display: inline-flex; margin-top: 38px; align-items: center; gap: 9px; text-decoration: none; font-size: .82rem; letter-spacing: .12em; text-transform: uppercase; }
+    .hero-link span { transition: transform .2s; }
+    .hero-link:hover span { transform: translateY(3px); }
+
+    .users-section { padding: 70px 0 110px; overflow: hidden; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 35px; }
+    .section-heading h2 { margin-bottom: 8px; font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1; }
+    .section-heading p { max-width: 390px; margin-bottom: 0; color: var(--muted); line-height: 1.7; }
+    .carousel {
+      position: relative;
+      height: 510px;
+      isolation: isolate;
+      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
     }
-    
-    .is-visible {
-      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .carousel::after { content: ""; position: absolute; left: 5%; right: 5%; bottom: 58px; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); z-index: -1; }
+    .card {
+      position: absolute;
+      top: 45px;
+      left: 50%;
+      width: min(290px, 70vw);
+      min-height: 370px;
+      padding: 28px 24px 22px;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+      border-radius: 9px;
+      background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 96%, white), var(--surface));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      transform: translateX(-50%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .65s cubic-bezier(.2,.8,.2,1), opacity .45s ease, filter .45s ease, border-color .3s;
+      will-change: transform;
+    }
+    .card.visible { pointer-events: auto; }
+    .card:hover, .card.focused { border-color: var(--accent); }
+    .card-favorite { position: absolute; top: 15px; right: 15px; border: 0; background: none; padding: 7px; color: var(--muted); }
+    .card-favorite svg { width: 20px; height: 20px; transition: transform .25s, color .25s, fill .25s; }
+    .card-favorite.is-favorite { color: var(--accent); }
+    .card-favorite.is-favorite svg { fill: currentColor; transform: scale(1.15); }
+    .portrait { width: 105px; height: 105px; margin: 3px auto 21px; overflow: hidden; border: 2px solid var(--border); border-radius: 50%; transition: border-color .3s; }
+    .card:hover .portrait, .card.focused .portrait { border-color: var(--accent); }
+    .portrait img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .card h3 { margin-bottom: 8px; font-size: 1.5rem; }
+    .card-role { margin-bottom: 3px; color: var(--accent); font-size: .7rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+    .card-company { margin-bottom: 0; color: var(--muted); font-family: "Playfair Display", serif; font-style: italic; }
+    .card-profile { width: 100%; margin-top: 25px; }
+    .carousel-controls { display: flex; justify-content: center; gap: 12px; margin-top: 4px; }
+    .carousel-controls button { width: 42px; height: 36px; border: 1px solid var(--border); border-radius: 6px; background: transparent; }
+    .carousel-controls button:hover { color: var(--accent); border-color: var(--accent); }
+
+    .about-section { padding: 100px 0 130px; border-top: 1px solid var(--border); }
+    .about-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 80px; align-items: start; }
+    .about-section h2 { margin-bottom: 18px; font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 1; }
+    .about-copy { max-width: 650px; color: var(--muted); line-height: 1.85; }
+    .about-copy p:last-child { margin-bottom: 0; }
+
+    .profile-dialog { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, .58); opacity: 0; pointer-events: none; transition: opacity .25s; }
+    .profile-dialog.open { opacity: 1; pointer-events: auto; }
+    .profile-panel { position: relative; width: min(560px, 100%); padding: 40px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg); box-shadow: 0 25px 80px rgba(0,0,0,.25); transform: translateY(14px); transition: transform .25s; }
+    .profile-dialog.open .profile-panel { transform: translateY(0); }
+    .profile-close { position: absolute; top: 15px; right: 15px; border: 0; background: none; font-size: 1.5rem; opacity: .7; }
+    .profile-panel-content { display: grid; grid-template-columns: 130px 1fr; gap: 28px; align-items: center; }
+    .profile-panel .portrait { width: 130px; height: 130px; margin: 0; }
+    .profile-panel h2 { margin-bottom: 8px; font-size: 2rem; }
+    .profile-panel p { color: var(--muted); line-height: 1.7; }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 28px, 560px); }
+      .nav-inner { min-height: 64px; flex-wrap: wrap; padding: 10px 0; }
+      .nav-links { order: 3; width: 100%; justify-content: center; gap: 26px; }
+      .favorite-count { display: none; }
+      .hero { min-height: 580px; padding: 75px 0; }
+      .section-heading { display: block; }
+      .section-heading p { margin-top: 18px; }
+      .carousel { height: 475px; }
+      .card { width: min(275px, 76vw); min-height: 350px; }
+      .about-grid { grid-template-columns: 1fr; gap: 25px; }
+      .profile-panel-content { grid-template-columns: 1fr; text-align: center; }
+      .profile-panel .portrait { margin: 0 auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
-<body class="antialiased font-sans min-h-screen selection:bg-nature-accent selection:text-white dark:selection:bg-midnight-accent dark:selection:text-black">
-
-  <nav class="sticky top-0 z-50 backdrop-blur-md border-b border-[var(--border)] bg-[var(--bg)]/80">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 class="font-serif text-2xl font-semibold tracking-wide italic">The Directory</h1>
-      <button id="theme-toggle" class="px-4 py-2 text-sm font-medium border border-[var(--border)] rounded-full hover:bg-[var(--card)] transition-colors">
-        Toggle Theme
-      </button>
+<body>
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="shell nav-inner">
+      <a class="brand serif" href="#home">The Directory</a>
+      <div class="nav-links">
+        <button class="nav-link active" data-target="home">Home</button>
+        <button class="nav-link" data-target="users">Users</button>
+        <button class="nav-link" data-target="about">About</button>
+      </div>
+      <div class="nav-actions">
+        <span class="favorite-count" aria-live="polite">Favorites: <strong id="favorite-count">0</strong></span>
+        <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to dark theme">☾</button>
+      </div>
     </div>
   </nav>
 
-  <main class="max-w-6xl mx-auto px-6 py-16">
-    <header class="text-center mb-24 animate-on-scroll">
-      <h2 class="font-serif text-5xl md:text-7xl mb-6 leading-tight">Meet the <br/> <span class="theme-accent italic">Brilliant Minds</span></h2>
-      <p class="max-w-2xl mx-auto text-lg opacity-80 font-light">A curated collection of our team members, designed with botanical elegance in the light and sophisticated midnight blue in the dark.</p>
-    </header>
+  <main>
+    <section id="home" class="section hero shell">
+      <div>
+        <p class="eyebrow">A collection of curious people</p>
+        <h1 class="serif">Meet the <span class="accent"><em>Brilliant Minds</em></span></h1>
+        <p class="hero-copy">An editorial team directory where creative thought, careful craft, and a little botanical elegance come together.</p>
+        <a class="hero-link accent" href="#users">Explore the directory <span aria-hidden="true">↓</span></a>
+      </div>
+    </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="card-container">
-      <!-- Cards injected by JS -->
-    </div>
+    <section id="users" class="section users-section">
+      <div class="shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">The people behind the work</p><h2 class="serif">Our <span class="accent"><em>directory</em></span></h2></div>
+          <p>Hover a card to bring it into focus. The collection moves gently on its own, or use the arrows to browse at your pace.</p>
+        </div>
+        <div id="carousel" class="carousel" aria-label="Team member carousel"></div>
+        <div class="carousel-controls" aria-label="Carousel controls">
+          <button id="previous" type="button" aria-label="Previous team member">←</button>
+          <button id="next" type="button" aria-label="Next team member">→</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about-section">
+      <div class="shell about-grid">
+        <div><p class="eyebrow">The idea</p><h2 class="serif">People make<br><span class="accent"><em>places.</em></span></h2></div>
+        <div class="about-copy">
+          <p>The Directory is a small celebration of the people who shape a team: the makers, thinkers, organizers, and quiet problem-solvers whose work gives a company its character.</p>
+          <p>This prototype explores an editorial and botanical visual language in both a warm cream light theme and a deep midnight theme. Every interaction is intentionally lightweight, readable, and designed to keep the people in focus.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
+  <div id="profile-dialog" class="profile-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-name">
+    <div class="profile-panel">
+      <button id="profile-close" class="profile-close" type="button" aria-label="Close profile">×</button>
+      <div id="profile-content" class="profile-panel-content"></div>
+    </div>
+  </div>
+
   <script>
-    // Theme Toggle Logic
-    const themeToggle = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-    
-    themeToggle.addEventListener('click', () => {
-      htmlElement.classList.toggle('dark');
-    });
-
-    // Generate Dummy Cards
     const users = [
-      { name: 'Eleanor Vance', role: 'Creative Director', company: 'The Garden Club' },
-      { name: 'Julian Baker', role: 'Lead Designer', company: 'Studio Botanica' },
-      { name: 'Sofia Chen', role: 'UX Architect', company: 'Midnight Labs' },
-      { name: 'Marcus Sterling', role: 'Senior Developer', company: 'The Meadows' },
-      { name: 'Aria Montgomery', role: 'Product Manager', company: 'Summer Picnic' },
-      { name: 'Leo Kingston', role: 'Brand Strategist', company: 'Creative Co.' },
+      { name: 'Eleanor Vance', role: 'Creative Director', company: 'The Garden Club', detail: 'Eleanor leads the creative practice, turning early ideas into thoughtful visual stories.', seed: 'Eleanor-Vance' },
+      { name: 'Julian Baker', role: 'Lead Designer', company: 'Studio Botanica', detail: 'Julian creates calm, useful interfaces and believes good design should feel inevitable.', seed: 'Julian-Baker' },
+      { name: 'Sofia Chen', role: 'UX Architect', company: 'Midnight Labs', detail: 'Sofia maps complex systems into experiences that make sense to real people.', seed: 'Sofia-Chen' },
+      { name: 'Marcus Sterling', role: 'Senior Developer', company: 'The Meadows', detail: 'Marcus builds resilient products and enjoys making the invisible parts work beautifully.', seed: 'Marcus-Sterling' },
+      { name: 'Aria Montgomery', role: 'Product Manager', company: 'Summer Picnic', detail: 'Aria brings teams together around clear priorities, useful questions, and shared momentum.', seed: 'Aria-Montgomery' },
+      { name: 'Leo Kingston', role: 'Brand Strategist', company: 'Creative Co.', detail: 'Leo finds the honest story in a brand and gives it room to grow.', seed: 'Leo-Kingston' }
     ];
+    const carousel = document.getElementById('carousel');
+    const favoriteCount = document.getElementById('favorite-count');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let center = 0;
+    let hovered = false;
+    let focusedIndex = null;
+    let favorites = new Set();
 
-    const container = document.getElementById('card-container');
-    
-    users.forEach((user, index) => {
-      const card = document.createElement('div');
-      card.style.animationDelay = `${index * 150}ms`;
-      card.className = 'theme-card border p-8 rounded-lg flex flex-col items-center text-center transition-transform hover:-translate-y-2 hover:shadow-xl duration-300 animate-on-scroll relative group';
-      
-      card.innerHTML = `
-        <button class="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors group/fav" onclick="this.classList.toggle('text-[var(--accent)]'); this.querySelector('svg').classList.toggle('fill-current'); this.classList.toggle('scale-110');">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-active/fav:scale-75">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-          </svg>
-        </button>
-        <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-2 border-[var(--border)] theme-accent-border transition-colors">
-          <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${user.name}&backgroundColor=transparent" alt="${user.name}" class="w-full h-full object-cover">
-        </div>
-        <h3 class="font-serif text-2xl mb-2">${user.name}</h3>
-        <p class="text-sm uppercase tracking-widest opacity-60 mb-1 font-medium">${user.role}</p>
-        <p class="text-sm font-serif italic opacity-75">${user.company}</p>
-        <button class="mt-8 px-6 py-2 border border-[var(--border)] group-hover:bg-[var(--accent)] group-hover:text-[var(--bg)] transition-colors duration-300 rounded-md text-sm uppercase tracking-wider">View Profile</button>
-      `;
-      
-      container.appendChild(card);
-    });
-
-    // Intersection Observer for Scroll Animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
+    function avatar(user) {
+      return `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(user.seed)}&backgroundColor=transparent`;
+    }
+    function heartIcon() {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+    }
+    function renderCards() {
+      carousel.innerHTML = '';
+      users.forEach((user, index) => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.dataset.index = index;
+        card.innerHTML = `
+          <button class="card-favorite${favorites.has(index) ? ' is-favorite' : ''}" type="button" aria-label="${favorites.has(index) ? 'Remove' : 'Add'} ${user.name} ${favorites.has(index) ? 'from' : 'to'} favorites">${heartIcon()}</button>
+          <div class="portrait"><img src="${avatar(user)}" alt="${user.name}"></div>
+          <h3 class="serif">${user.name}</h3>
+          <p class="card-role">${user.role}</p>
+          <p class="card-company">${user.company}</p>
+          <button class="outline-button card-profile" type="button">View Profile</button>
+        `;
+        card.addEventListener('mouseenter', () => { hovered = true; focusedIndex = index; updateCards(); });
+        card.addEventListener('mouseleave', () => { hovered = false; focusedIndex = null; updateCards(); });
+        card.querySelector('.card-favorite').addEventListener('click', () => {
+          favorites.has(index) ? favorites.delete(index) : favorites.add(index);
+          favoriteCount.textContent = favorites.size;
+          renderCards();
+        });
+        card.querySelector('.card-profile').addEventListener('click', () => openProfile(user));
+        carousel.appendChild(card);
       });
-    }, {
-      threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px"
-    });
+      updateCards();
+    }
+    function updateCards() {
+      const cards = carousel.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        let distance = index - center;
+        if (distance > users.length / 2) distance -= users.length;
+        if (distance < -users.length / 2) distance += users.length;
+        const isFocused = focusedIndex === index;
+        const visible = Math.abs(distance) <= 2 || isFocused;
+        const scale = isFocused || distance === 0 ? 1 : Math.max(.68, 1 - Math.abs(distance) * .14);
+        const x = distance * (window.innerWidth < 720 ? 67 : 82);
+        const y = Math.abs(distance) * Math.abs(distance) * 21;
+        card.classList.toggle('visible', visible);
+        card.classList.toggle('focused', isFocused);
+        card.style.opacity = visible ? (Math.abs(distance) > 2 ? 0 : 1) : 0;
+        card.style.zIndex = String(10 - Math.abs(distance) + (isFocused ? 5 : 0));
+        card.style.filter = distance === 0 || isFocused ? 'none' : 'saturate(.65)';
+        card.style.transform = `translate(calc(-50% + ${x}px), ${y}px) scale(${scale})`;
+      });
+    }
+    function move(step) {
+      center = (center + step + users.length) % users.length;
+      focusedIndex = null;
+      updateCards();
+    }
+    function openProfile(user) {
+      document.getElementById('profile-content').innerHTML = `<div class="portrait"><img src="${avatar(user)}" alt="${user.name}"></div><div><p class="eyebrow">${user.role} · ${user.company}</p><h2 id="profile-name" class="serif">${user.name}</h2><p>${user.detail}</p></div>`;
+      document.getElementById('profile-dialog').classList.add('open');
+      document.getElementById('profile-close').focus();
+    }
+    function closeProfile() {
+      document.getElementById('profile-dialog').classList.remove('open');
+    }
+    renderCards();
+    document.getElementById('previous').addEventListener('click', () => move(-1));
+    document.getElementById('next').addEventListener('click', () => move(1));
+    document.getElementById('profile-close').addEventListener('click', closeProfile);
+    document.getElementById('profile-dialog').addEventListener('click', (event) => { if (event.target.id === 'profile-dialog') closeProfile(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeProfile(); });
+    if (!reducedMotion) setInterval(() => { if (!hovered) move(1); }, 3600);
 
-    document.querySelectorAll('.animate-on-scroll').forEach(el => {
-      observer.observe(el);
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      const dark = html.classList.toggle('dark');
+      themeToggle.textContent = dark ? '☀' : '☾';
+      themeToggle.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} theme`);
     });
+    document.querySelectorAll('.nav-link').forEach((link) => link.addEventListener('click', () => document.getElementById(link.dataset.target).scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' })));
+    const sections = document.querySelectorAll('.section');
+    const sectionObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (entry.isIntersecting) document.querySelectorAll('.nav-link').forEach((link) => link.classList.toggle('active', link.dataset.target === entry.target.id));
+    }), { rootMargin: '-35% 0px -55% 0px' });
+    sections.forEach((section) => sectionObserver.observe(section));
+    window.addEventListener('resize', updateCards);
   </script>
 </body>
 </html>
