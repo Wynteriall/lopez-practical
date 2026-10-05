@@ -3,12 +3,16 @@
 ## Goal Description
 Build a barebones React Team Directory application with functionality prioritized over design. The implementation will be delivered in isolated, incremental slices so each milestone can be verified and committed to Git individually.
 
+## Process Rule
+* **Continuous Updates**: This plan must be continuously updated whenever a slice gets finished, marking completed milestones and their verification status.
+
 ---
 
 ## Slice Breakdown (Step-by-Step Milestones)
 
-### Slice 1: Documentation & Dependency Setup
+### Slice 1: Documentation & Dependency Setup [Finished]
 * **Goal**: Establish project documentation in the repository and install routing dependencies.
+* **Status**: Finished
 * **Changes**:
   * Save `architecture.md` and `implementation_plan.md` in repository root.
   * Install `react-router-dom`.
@@ -17,8 +21,9 @@ Build a barebones React Team Directory application with functionality prioritize
 
 ---
 
-### Slice 2: Local User Data & Base UI Components
+### Slice 2: Local User Data & Base UI Components [Finished]
 * **Goal**: Prepare the static dataset and foundational standalone components.
+* **Status**: Finished
 * **Changes**:
   * `src/data/users.js`: 8 user objects (`id`, `name`, `email`, `company`, `role`).
   * `src/components/Button.jsx`: Props: `label`, `onClick`, `variant` (`primary` | `danger`), and `children`.
@@ -29,8 +34,9 @@ Build a barebones React Team Directory application with functionality prioritize
 
 ---
 
-### Slice 3: Global Context (Theme & Favorites)
+### Slice 3: Global Context (Theme & Favorites) [Finished]
 * **Goal**: Provide application-level state for theme (dark/light) and favorites array without external APIs.
+* **Status**: Finished
 * **Changes**:
   * `src/context/AppContext.jsx`: Creates `AppContext` & `AppProvider` managing `theme` and `favorites`.
 * **Verification**: Verify provider wraps components and exports custom hook / consumer.
@@ -38,8 +44,9 @@ Build a barebones React Team Directory application with functionality prioritize
 
 ---
 
-### Slice 4: Shell, Routes, Navbar & Placeholder Pages
+### Slice 4: Shell, Routes, Navbar & Placeholder Pages [Finished]
 * **Goal**: Set up `react-router-dom` routing and navigation shell.
+* **Status**: Finished
 * **Changes**:
   * Pages: `Home.jsx`, `About.jsx`, `NotFound.jsx`, stub `Users.jsx`, stub `UserDetails.jsx`.
   * `src/components/Navbar.jsx`: Uses `NavLink` with active link styling, shows favorite count from context, theme toggle button.
