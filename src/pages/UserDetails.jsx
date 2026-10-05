@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { users as userList } from '../data/users';
 
 export default function UserDetails() {
   const { id } = useParams();
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const selectedUser = userList.find((person) => person.id === Number(id));
-    setUser(selectedUser ?? null);
-  }, [id]);
+  const user = userList.find((person) => person.id === Number(id)) ?? null;
 
   useEffect(() => {
     if (user) {
