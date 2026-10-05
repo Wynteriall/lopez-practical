@@ -134,6 +134,21 @@
     .carousel-controls { display: flex; justify-content: center; gap: 12px; margin-top: 4px; }
     .carousel-controls button { width: 42px; height: 36px; border: 1px solid var(--border); border-radius: 6px; background: transparent; }
     .carousel-controls button:hover { color: var(--accent); border-color: var(--accent); }
+    .trajectory-tools {
+      margin: 28px auto 0;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: color-mix(in srgb, var(--surface) 72%, transparent);
+    }
+    .trajectory-tools-header { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+    .trajectory-tools h3 { margin: 0; font-size: .95rem; letter-spacing: .04em; }
+    .trajectory-tools-header p { margin: 0; color: var(--muted); font-size: .78rem; }
+    .trajectory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 22px; }
+    .trajectory-control { display: grid; gap: 8px; }
+    .trajectory-control label { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    .trajectory-control output { color: var(--accent); font-variant-numeric: tabular-nums; }
+    .trajectory-control input { width: 100%; accent-color: var(--accent); }
 
     .about-section { padding: 100px 0 130px; border-top: 1px solid var(--border); }
     .about-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 80px; align-items: start; }
@@ -161,6 +176,7 @@
       .section-heading p { margin-top: 18px; }
       .carousel { height: 475px; }
       .card { width: min(275px, 76vw); min-height: 350px; }
+      .trajectory-grid { grid-template-columns: repeat(2, 1fr); }
       .about-grid { grid-template-columns: 1fr; gap: 25px; }
       .profile-panel-content { grid-template-columns: 1fr; text-align: center; }
       .profile-panel .portrait { margin: 0 auto; }
@@ -201,13 +217,37 @@
       <div class="shell">
         <div class="section-heading">
           <div><p class="eyebrow">The people behind the work</p><h2 class="serif">Our <span class="accent"><em>directory</em></span></h2></div>
-          <p>Hover a card to bring it into focus. The collection moves gently on its own, or use the arrows to browse at your pace.</p>
+          <p>Hover any card to bring it smoothly to the center, or use the arrows to browse the upward catenary curve.</p>
         </div>
         <div id="carousel" class="carousel" aria-label="Team member carousel"></div>
         <div class="carousel-controls" aria-label="Carousel controls">
           <button id="previous" type="button" aria-label="Previous team member">←</button>
           <button id="next" type="button" aria-label="Next team member">→</button>
         </div>
+        <section class="trajectory-tools" aria-labelledby="trajectory-tools-title">
+          <div class="trajectory-tools-header">
+            <h3 id="trajectory-tools-title">Trajectory tools</h3>
+            <p>Shape the curve and the edge-to-center focus.</p>
+          </div>
+          <div class="trajectory-grid">
+            <div class="trajectory-control">
+              <label for="curve-lift">Curve lift <output id="curve-lift-value">21px</output></label>
+              <input id="curve-lift" type="range" min="8" max="52" value="21" step="1">
+            </div>
+            <div class="trajectory-control">
+              <label for="curve-spread">Curve spread <output id="curve-spread-value">1.4</output></label>
+              <input id="curve-spread" type="range" min="0.8" max="2.4" value="1.4" step="0.1">
+            </div>
+            <div class="trajectory-control">
+              <label for="edge-scale">Edge scale <output id="edge-scale-value">68%</output></label>
+              <input id="edge-scale" type="range" min="55" max="90" value="68" step="1">
+            </div>
+            <div class="trajectory-control">
+              <label for="edge-blur">Edge blur <output id="edge-blur-value">2px</output></label>
+              <input id="edge-blur" type="range" min="0" max="8" value="2" step="1">
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -242,9 +282,9 @@
     const favoriteCount = document.getElementById('favorite-count');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let center = 0;
-    let hovered = false;
     let focusedIndex = null;
     let favorites = new Set();
+    const trajectory = { lift: 21, spread: 1.4, edgeScale: 0.68, edgeBlur: 2 };
 
     function avatar(user) {
       return `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(user.seed)}&backgroundColor=transparent`;
@@ -266,8 +306,15 @@
           <p class="card-company">${user.company}</p>
           <button class="outline-button card-profile" type="button">View Profile</button>
         `;
-        card.addEventListener('mouseenter', () => { hovered = true; focusedIndex = index; updateCards(); });
-        card.addEventListener('mouseleave', () => { hovered = false; focusedIndex = null; updateCards(); });
+        card.addEventListener('mouseenter', () => {
+          center = index;
+          focusedIndex = index;
+          updateCards();
+        });
+        card.addEventListener('mouseleave', () => {
+          focusedIndex = null;
+          updateCards();
+        });
         card.querySelector('.card-favorite').addEventListener('click', () => {
           favorites.has(index) ? favorites.delete(index) : favorites.add(index);
           favoriteCount.textContent = favorites.size;
@@ -285,15 +332,18 @@
         if (distance > users.length / 2) distance -= users.length;
         if (distance < -users.length / 2) distance += users.length;
         const isFocused = focusedIndex === index;
-        const visible = Math.abs(distance) <= 2 || isFocused;
-        const scale = isFocused || distance === 0 ? 1 : Math.max(.68, 1 - Math.abs(distance) * .14);
+        const visible = Math.abs(distance) <= 3;
+        const distanceFromCenter = Math.abs(distance);
+        const scale = distance === 0 ? 1 : Math.max(trajectory.edgeScale, 1 - distanceFromCenter * (1 - trajectory.edgeScale) / 3);
         const x = distance * (window.innerWidth < 720 ? 67 : 82);
-        const y = Math.abs(distance) * Math.abs(distance) * 21;
+        const normalizedDistance = distanceFromCenter / trajectory.spread;
+        const y = trajectory.lift * (Math.cosh(normalizedDistance) - 1);
+        const blur = distance === 0 ? 0 : trajectory.edgeBlur * Math.min(1, distanceFromCenter / 3);
         card.classList.toggle('visible', visible);
         card.classList.toggle('focused', isFocused);
-        card.style.opacity = visible ? (Math.abs(distance) > 2 ? 0 : 1) : 0;
+        card.style.opacity = visible ? 1 : 0;
         card.style.zIndex = String(10 - Math.abs(distance) + (isFocused ? 5 : 0));
-        card.style.filter = distance === 0 || isFocused ? 'none' : 'saturate(.65)';
+        card.style.filter = distance === 0 ? 'none' : `blur(${blur}px) saturate(${Math.max(.65, 1 - distanceFromCenter * .12)})`;
         card.style.transform = `translate(calc(-50% + ${x}px), ${y}px) scale(${scale})`;
       });
     }
@@ -316,7 +366,21 @@
     document.getElementById('profile-close').addEventListener('click', closeProfile);
     document.getElementById('profile-dialog').addEventListener('click', (event) => { if (event.target.id === 'profile-dialog') closeProfile(); });
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeProfile(); });
-    if (!reducedMotion) setInterval(() => { if (!hovered) move(1); }, 3600);
+
+    [
+      ['curve-lift', 'lift', (value) => `${value}px`, (value) => Number(value)],
+      ['curve-spread', 'spread', (value) => Number(value).toFixed(1), (value) => Number(value)],
+      ['edge-scale', 'edgeScale', (value) => `${value}%`, (value) => Number(value) / 100],
+      ['edge-blur', 'edgeBlur', (value) => `${value}px`, (value) => Number(value)]
+    ].forEach(([id, key, format, parse]) => {
+      const input = document.getElementById(id);
+      const output = document.getElementById(`${id}-value`);
+      input.addEventListener('input', () => {
+        trajectory[key] = parse(input.value);
+        output.textContent = format(input.value);
+        updateCards();
+      });
+    });
 
     const html = document.documentElement;
     const themeToggle = document.getElementById('theme-toggle');
