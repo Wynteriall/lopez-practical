@@ -95,9 +95,12 @@
     .section-heading p { max-width: 390px; margin-bottom: 0; color: var(--muted); line-height: 1.7; }
     .carousel {
       position: relative;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
       height: 510px;
       isolation: isolate;
-      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+      mask-image: linear-gradient(to right, transparent 0%, black 13%, black 87%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 13%, black 87%, transparent 100%);
     }
     .carousel::after { content: ""; position: absolute; left: 5%; right: 5%; bottom: 58px; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); z-index: -1; }
     .card {
@@ -217,7 +220,7 @@
       <div class="shell">
         <div class="section-heading">
           <div><p class="eyebrow">The people behind the work</p><h2 class="serif">Our <span class="accent"><em>directory</em></span></h2></div>
-          <p>Hover any card to bring it smoothly to the center, or use the arrows to browse the upward catenary curve.</p>
+          <p>Hover any card to bring it smoothly to the center, or use the arrows to browse the downward catenary curve.</p>
         </div>
         <div id="carousel" class="carousel" aria-label="Team member carousel"></div>
         <div class="carousel-controls" aria-label="Carousel controls">
@@ -333,9 +336,12 @@
         const visible = Math.abs(distance) <= visibleLimit;
         const distanceFromCenter = Math.abs(distance);
         const scale = distance === 0 ? 1 : Math.max(trajectory.edgeScale, 1 - distanceFromCenter * (1 - trajectory.edgeScale) / 3);
-        const x = distance * (window.innerWidth < 720 ? 67 : 82);
+        const xGap = window.innerWidth < 720
+          ? Math.min(92, window.innerWidth * .24)
+          : Math.min(270, Math.max(150, window.innerWidth * .19));
+        const x = distance * xGap;
         const normalizedDistance = distanceFromCenter / trajectory.spread;
-        const y = trajectory.lift * (Math.cosh(normalizedDistance) - 1);
+        const y = -trajectory.lift * (Math.cosh(normalizedDistance) - 1);
         const blur = distance === 0 ? 0 : trajectory.edgeBlur * Math.min(1, distanceFromCenter / 3);
         card.classList.toggle('visible', visible);
         card.classList.toggle('focused', isFocused);
